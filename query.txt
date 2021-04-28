@@ -1,0 +1,69 @@
+1) Seleziona tutti gli ospiti che sono stati identificati con la carta di identità
+2) Seleziona tutti gli ospiti che sono nati dopo il 1988
+3) Seleziona tutti gli ospiti che hanno più di 20 anni (al momento dell’esecuzione della query)
+4) Seleziona tutti gli ospiti il cui nome inizia con la D
+5) Calcola il totale degli ordini accepted
+6) Qual è il prezzo massimo pagato?
+7) Seleziona gli ospiti riconosciuti con patente e nati nel 1975
+8) Quanti posti letto ha l’hotel in totale?
+
+
+1) 
+
+SELECT * 
+FROM `ospiti`
+WHERE `document_type` = 'ci';
+
+
+2)
+
+SELECT * 
+FROM `ospiti`
+WHERE `date_of_birth` >= '1989';
+
+
+3)
+
+SELECT * 
+FROM `ospiti`
+WHERE YEAR(CURRENT_DATE()) - YEAR(`date_of_birth`) >= 21;
+
+
+SELECT *
+FROM `ospiti`
+WHERE (DATEDIFF(NOW(), `date_of_birth`) / 365) >= 21;
+variante per verificare se sono già stati compiuti gli anni
+
+
+
+4)
+
+SELECT * 
+FROM `ospiti` 
+WHERE `name` LIKE 'D%';
+
+5)
+
+SELECT SUM(`price`) AS 'Totale pagamenti accettati' 
+FROM `pagamenti` 
+WHERE `status` = 'accepted';
+
+
+6)
+
+SELECT MAX(`price`) AS 'Pagamento più oneroso'
+FROM `pagamenti`
+WHERE `status` = 'accepted';
+
+
+7)
+
+SELECT *
+FROM `ospiti`
+WHERE `document_type` = 'driver license' AND `date_of_birth` LIKE '1975-%-%';
+
+
+8)
+
+SELECT SUM(`beds`) AS 'Totale posti letto Hotel'
+FROM `stanze`;
