@@ -1,0 +1,95 @@
+GROUP BY
+1) Conta gli ospiti raggruppandoli per anno di nascita
+2) Somma i prezzi dei pagamenti raggruppandoli per status
+3) Conta quante volte è stata prenotata ogni stanza
+4) Fai una analisi per vedere se ci sono ore in cui le prenotazioni sono più frequenti
+5) Quante prenotazioni ha fatto l’ospite che ha fatto più prenotazioni?
+
+1)
+SELECT YEAR(`date_of_birth`) AS 'Anno_di_nascita', COUNT(`id`) AS 'numero_persone' 
+FROM `ospiti`
+GROUP BY `Anno_di_nascita`;
+
+2)
+SELECT `status`, SUM(`price`) AS 'totale' 
+FROM `pagamenti`
+GROUP BY `status`;
+
+3)
+SELECT `stanza_id`, COUNT(`id`) AS 'tot_prenotazioni'
+FROM `prenotazioni`
+GROUP BY `stanza_id`;
+
+4)
+SELECT HOUR(`created_at`) AS 'ora_prenotazione', COUNT(`id`) AS 'tot_prenotazioni'
+FROM `prenotazioni`
+GROUP BY `ora_prenotazione`;
+
+5)
+SELECT COUNT(`id`) AS 'tot_prenotazioni', `ospite_id`
+FROM `prenotazioni_has_ospiti`
+GROUP BY `ospite_id`
+ORDER BY (`tot_prenotazioni`) DESC
+LIMIT 1;
+
+
+JOIN
+1) Come si chiamano gli ospiti che hanno fatto più di due prenotazioni?
+2) Stampare tutti gli ospiti per ogni prenotazione
+3) Stampare Nome, Cognome, Prezzo e Pagante per tutte le prenotazioni fatte a Maggio 2018
+4) Fai la somma di tutti i prezzi delle prenotazioni per le stanze del primo piano
+5) Prendi i dati di fatturazione per la prenotazione con id=7
+6) Le stanze sono state tutte prenotate almeno una volta? (Visualizzare le stanze non ancora prenotate) 
+
+
+1)
+SELECT `ospiti`.`name`, COUNT(`prenotazioni`.`id`) AS 'tot_prenotazioni' 
+FROM `prenotazioni`
+INNER JOIN `prenotazioni_has_ospiti`
+ON `prenotazioni`.`id` = `prenotazioni_has_ospiti`.`prenotazione_id`
+INNER JOIN `ospiti`
+ON `prenotazioni_has_ospiti`.`ospite_id` = `ospiti`.`id`
+GROUP BY `ospiti`.`name`
+HAVING `tot_prenotazioni` > 1;
+
+2)
+SELECT `prenotazione_id` AS 'numero_prenotazione', `ospiti`.`name`, `ospiti`.`lastname`
+FROM `prenotazioni_has_ospiti`
+INNER JOIN `ospiti`
+ON `prenotazioni_has_ospiti`.`ospite_id` = `ospiti`.`id`;
+
+3)
+SELECT `prenotazioni`.`id`, `ospiti`.`name` AS 'nome_ospite', `ospiti`.`lastname` AS 'cognome_ospite', `pagamenti`.`price`, `paganti`.`name` AS 'nome_pagante' 
+FROM `prenotazioni` 
+LEFT JOIN `pagamenti`
+ON `prenotazioni`.`id` = `pagamenti`.`prenotazione_id`
+LEFT JOIN `paganti`
+ON `pagamenti`.`pagante_id` = `paganti`.`id`
+LEFT JOIN `ospiti`
+ON `paganti`.`ospite_id` = `ospiti`.`id`
+WHERE EXTRACT(YEAR_MONTH FROM `prenotazioni`.`created_at`) = 201805;
+
+4)
+SELECT SUM(`pagamenti`.`price`) AS 'tot_prenotazioni_primo_piano' 
+FROM `stanze`
+INNER JOIN `prenotazioni`
+ON `stanze`.`id` = `prenotazioni`.`stanza_id`
+INNER JOIN `pagamenti`
+ON `prenotazioni`.`id` = `pagamenti`.`prenotazione_id`
+WHERE `stanze`.`floor` = 1;
+
+5)
+SELECT `prenotazioni`.`id`, `pagamenti`.`status`, `pagamenti`.`price`, `paganti`.`name`, `paganti`.`lastname`, `paganti`.`address`
+FROM `prenotazioni`
+INNER JOIN `pagamenti`
+ON `prenotazioni`.`id` = `pagamenti`.`prenotazione_id`
+INNER JOIN `paganti`
+ON `pagamenti`.`pagante_id` = `paganti`.`id`
+WHERE `prenotazioni`.`id` = 7;
+
+6)
+SELECT * 
+FROM `stanze`
+LEFT JOIN `prenotazioni`
+ON `stanze`.`id` = `prenotazioni`.`stanza_id`
+WHERE `prenotazioni`.`stanza_id` IS NULL;

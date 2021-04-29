@@ -47,14 +47,14 @@ WHERE `name` LIKE 'D%';
 
 5)
 
-SELECT SUM(`price`) AS 'Totale pagamenti accettati' 
+SELECT SUM(`price`) AS 'Totale_pagamenti_accettati' 
 FROM `pagamenti` 
 WHERE `status` = 'accepted';
 
 
 6)
 
-SELECT MAX(`price`) AS 'Pagamento più oneroso'
+SELECT MAX(`price`) AS 'Pagamento_più_oneroso'
 FROM `pagamenti`
 WHERE `status` = 'accepted';
 
@@ -68,5 +68,5 @@ WHERE `document_type` = 'driver license' AND `date_of_birth` LIKE '1975-%-%';
 
 8)
 
-SELECT SUM(`beds`) AS 'Totale posti letto Hotel'
+SELECT SUM(`beds`) AS 'Totale_posti_letto_Hotel'
 FROM `stanze`;
