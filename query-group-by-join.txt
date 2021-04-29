@@ -61,12 +61,14 @@ ON `prenotazioni_has_ospiti`.`ospite_id` = `ospiti`.`id`;
 3)
 SELECT `prenotazioni`.`id`, `ospiti`.`name` AS 'nome_ospite', `ospiti`.`lastname` AS 'cognome_ospite', `pagamenti`.`price`, `paganti`.`name` AS 'nome_pagante' 
 FROM `prenotazioni` 
-LEFT JOIN `pagamenti`
-ON `prenotazioni`.`id` = `pagamenti`.`prenotazione_id`
-LEFT JOIN `paganti`
-ON `pagamenti`.`pagante_id` = `paganti`.`id`
-LEFT JOIN `ospiti`
-ON `paganti`.`ospite_id` = `ospiti`.`id`
+INNER JOIN `prenotazioni_has_ospiti`
+ON `prenotazioni`.`id` = `prenotazioni_has_ospiti`.`prenotazione_id`
+INNER JOIN `ospiti`
+ON `prenotazioni_has_ospiti`.`ospite_id` = `ospiti`.`id`
+INNER JOIN `pagamenti`
+ON `pagamenti`.`prenotazione_id` = `prenotazioni`.`id`
+INNER JOIN `paganti`
+ON `paganti`.`id` = `pagamenti`.`pagante_id`
 WHERE EXTRACT(YEAR_MONTH FROM `prenotazioni`.`created_at`) = 201805;
 
 4)
